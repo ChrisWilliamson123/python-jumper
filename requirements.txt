@@ -1,0 +1,2 @@
+-e git+ssh://git@github.com/ChrisWilliamson123/python-gameutils.git@c3ccd0b90482dd8a92030ad6d1430313e4cbec56#egg=gameutils
+pygame==2.6.1
