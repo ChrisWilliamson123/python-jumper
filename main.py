@@ -1,7 +1,8 @@
 import pygame
 
 from gameutils.ecs.world import World
-from gameutils.game_settings import GameSettings
+from gameutils.sprites.sprite_sheet import SpriteSheet
+from gameutils.sprites.sprite import Sprite as SpriteModel
 
 from components.earth import Earth
 from components.gravity import Gravity
@@ -15,7 +16,8 @@ from components.sprite import Sprite
 from components.velocity import Velocity
 from models.screen_edge import ScreenEdge
 from settings.jumper_settings import JumperSettings
-from sprites.sprite import PlayerSprite
+from sprites.image_sprite import ImageSprite
+from sprites.player_sprite import PlayerSprite
 from systems.gravity_system import GravitySystem
 from systems.input_system import InputSystem
 from systems.movement_system import MovementSystem
@@ -77,6 +79,16 @@ def __main__():
     earth.add_component(Gravity())
     earth.add_component(Mass(5.972 * (10**24) * EARTH_MASS_MULTIPLIER))
     earth.add_component(Earth())
+
+    # Platform
+    terrain_sprites = [
+        SpriteModel('platform', (272, 0), (58, 5))
+    ]
+    terrain_sprite_sheet = SpriteSheet('assets/sprite_sheets/terrain.png', terrain_sprites)
+    terrain_sprites = terrain_sprite_sheet.get_sprites()
+    platform = world.create_entity()
+    platform.add_component(Sprite(ImageSprite(terrain_sprites['platform'])))
+    platform.add_component(Position(100, SCREEN_HEIGHT - 5))
 
     while world.running:
         dt = clock.tick(settings.framerate) / 1000.0
