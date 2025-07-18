@@ -51,7 +51,7 @@ def __main__():
     world.running = True
 
     # Systems
-    input_system = InputSystem()
+    input_system = InputSystem(settings)
     gravity_system = GravitySystem()
     movement_system = MovementSystem()
     screen_bounding_system = ScreenBoundingSystem(SCREEN_WIDTH, SCREEN_HEIGHT)

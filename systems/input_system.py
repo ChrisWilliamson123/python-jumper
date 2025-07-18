@@ -7,6 +7,10 @@ from components.player_controlled import PlayerControlled
 from components.velocity import Velocity
 
 class InputSystem(System):
+    def __init__(self, settings):
+        super().__init__()
+        self.settings = settings
+
     def update(self, dt):
         keys_pressed = pygame.key.get_pressed()
         
@@ -22,8 +26,8 @@ class InputSystem(System):
             new_x_vel = 0
             # Horizontal movement
             if keys_pressed[left_key]:
-                new_x_vel -= 200
+                new_x_vel -= self.settings.player_x_speed
             if keys_pressed[right_key]:
-                new_x_vel += 200
+                new_x_vel += self.settings.player_x_speed
 
             velocity.x = new_x_vel
