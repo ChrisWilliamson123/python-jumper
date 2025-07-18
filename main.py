@@ -27,7 +27,9 @@ from systems.movement_system import MovementSystem
 from systems.render_system import RenderSystem
 from systems.screen_bounding_system import ScreenBoundingSystem
 from systems.screen_wrapping_system import ScreenWrappingSystem
+from systems.scroll_system import ScrollSystem
 from systems.solid_ground_system import SolidGroundSystem
+from systems.sprite_destruction_system import SpriteDestructionSystem
 from systems.sprite_rect_generation_system import SpriteRectGenerationSystem
 
 # Game setup
@@ -75,11 +77,11 @@ def __main__():
     terrain_sprite_sheet = SpriteSheet('assets/sprite_sheets/terrain.png', terrain_sprites)
     terrain_sprites = terrain_sprite_sheet.get_sprites()
 
-    for i in range(0, 10):
-        platform = world.create_entity()
-        platform.add_component(Sprite(ImageSprite(terrain_sprites['platform'])))
-        platform.add_component(Position(100 + (i * 50), SCREEN_HEIGHT - 5 - (i * 80)))
-        platform.add_component(SolidGround())
+    # for i in range(0, 10):
+    #     platform = world.create_entity()
+    #     platform.add_component(Sprite(ImageSprite(terrain_sprites['platform'])))
+    #     platform.add_component(Position(100 + (i * 50), SCREEN_HEIGHT - 5 - (i * 80)))
+    #     platform.add_component(SolidGround())
 
     # Setting up sprite groups
     solid_ground_settler_sprite_group = pygame.sprite.Group()
@@ -100,17 +102,21 @@ def __main__():
     solid_ground_system = SolidGroundSystem(solid_ground_sprite_group, solid_ground_settler_sprite_group)
     screen_bounding_system = ScreenBoundingSystem(SCREEN_WIDTH, SCREEN_HEIGHT)
     screen_wrapping_system = ScreenWrappingSystem(SCREEN_WIDTH, SCREEN_HEIGHT)
+    scroll_system = ScrollSystem(settings)
+    sprite_destruction_system = SpriteDestructionSystem(SCREEN_WIDTH, SCREEN_HEIGHT)
     render_system = RenderSystem(screen)
     systems = [
         input_system,
         gravity_system,
         collision_system,
         movement_system,
-        # platform_generation_system,
+        platform_generation_system,
         sprite_rect_generation_system,
         solid_ground_system,
+        scroll_system,
         screen_bounding_system,
         screen_wrapping_system,
+        sprite_destruction_system,
         render_system
     ]
     for system in systems:

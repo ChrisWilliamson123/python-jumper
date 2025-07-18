@@ -31,47 +31,46 @@ class PlatformGenerationSystem(System):
         self.max_horizontal_distance = self.player_x_speed * (2 * time_to_peak)
 
     def update(self, dt):
-        # For simplicity, generate a new platform when the top-most platform is about to go off-screen
-        if self.last_platform_pos is None or self.last_platform_pos.y > 0:
+        platform_count = len(self.world.get_entities_with_components(SolidGround))
+        print(f'Platform count: {platform_count}')
+        to_gen = 10 - platform_count
+        for _ in range(to_gen):
             self.generate_platform()
 
     def generate_platform(self):
+        print(f'Previous platform pos: {self.last_platform_pos}')
         platform_sprite_model = self.terrain_sprites['platform']
         platform_width = platform_sprite_model.get_width()
         platform_height = platform_sprite_model.get_height()
 
-        while self.platform_count < 10:
-            if self.last_platform_pos is None:
-                # First platform
-                x = self.screen_width / 2
-                y = self.screen_height - platform_height - 50
-            else:
-                # Subsequent platforms
-                # Ensure the next platform is reachable
-                max_y_diff = self.max_jump_height * 0.8 # 80% of max jump height for safety
-                max_x_diff = self.max_horizontal_distance * 0.8
+        if self.last_platform_pos is None:
+            # First platform
+            x = self.screen_width / 2
+            y = self.screen_height - platform_height - 50
+        else:
+            # Subsequent platforms
+            # Ensure the next platform is reachable
+            max_y_diff = self.max_jump_height * 0.8 # 80% of max jump height for safety
+            max_x_diff = self.max_horizontal_distance * 0.8
 
-                y_offset = random.uniform(-max_y_diff * 0.5, -max_y_diff)
-                x_offset = random.uniform(-max_x_diff, max_x_diff)
+            y_offset = random.uniform(-max_y_diff * 0.5, -max_y_diff)
+            x_offset = random.uniform(-max_x_diff, max_x_diff)
 
 
-                new_x = self.last_platform_pos.x + x_offset
-                new_y = self.last_platform_pos.y - y_offset
+            new_x = self.last_platform_pos.x + x_offset
+            new_y = self.last_platform_pos.y - y_offset
 
-                # Clamp to screen bounds
-                x = max(platform_width / 2, min(new_x, self.screen_width - platform_width / 2))
-                y = new_y
+            # Clamp to screen bounds
+            x = max(platform_width / 2, min(new_x, self.screen_width - platform_width / 2))
+            y = max(platform_height / 2, min(new_y, self.screen_height - platform_height / 2))
 
-                print(x, y)
+        platform = self.world.create_entity()
+        sprite = ImageSprite(platform_sprite_model)
+        platform.add_component(Sprite(sprite))
+        pos_comp = Position(x, y)
+        platform.add_component(Position(x, y))
+        platform.add_component(SolidGround())
 
-            platform = self.world.create_entity()
-            sprite = ImageSprite(platform_sprite_model)
-            platform.add_component(Sprite(sprite))
-            platform.add_component(Position(x, y))
-            platform.add_component(SolidGround())
+        self.solid_ground_group.add(sprite)
 
-            self.solid_ground_group.add(sprite)
-
-            self.last_platform_pos = pygame.Vector2(x, y)
-
-            self.platform_count += 1
+        self.last_platform_pos = pos_comp
