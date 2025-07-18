@@ -2,6 +2,7 @@ import pygame
 
 from gameutils.ecs.system import System
 
+from components.player import Player
 from components.position import Position
 from components.sprite import Sprite
 from components.velocity import Velocity
@@ -14,7 +15,9 @@ class SpriteDestructionSystem(System):
 
     def update(self, dt):
         entities_to_remove = []
-        for (entity, (position, sprite)) in self.world.get_entities_with_components(Position, Sprite):
+        for (entity, (_, sprite)) in self.world.get_entities_with_components(Position, Sprite):
+            if entity.get_component(Player):
+                continue
             rect = sprite.sprite.rect
             if self._is_rect_outside_screen_rect(rect, self.screen_rect):
                 entities_to_remove.append(entity)
