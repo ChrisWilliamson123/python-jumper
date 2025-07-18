@@ -19,6 +19,7 @@ from models.screen_edge import ScreenEdge
 from settings.jumper_settings import JumperSettings
 from sprites.image_sprite import ImageSprite
 from sprites.player_sprite import PlayerSprite
+from systems.platform_generation_system import PlatformGenerationSystem
 from systems.collision_system import CollisionSystem
 from systems.gravity_system import GravitySystem
 from systems.input_system import InputSystem
@@ -94,6 +95,7 @@ def __main__():
     gravity_system = GravitySystem()
     collision_system = CollisionSystem(solid_ground_sprite_group)
     movement_system = MovementSystem()
+    platform_generation_system = PlatformGenerationSystem(SCREEN_WIDTH, SCREEN_HEIGHT, terrain_sprites, solid_ground_sprite_group)
     sprite_rect_generation_system = SpriteRectGenerationSystem()
     solid_ground_system = SolidGroundSystem(solid_ground_sprite_group, solid_ground_settler_sprite_group)
     screen_bounding_system = ScreenBoundingSystem(SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -104,6 +106,7 @@ def __main__():
         gravity_system,
         collision_system,
         movement_system,
+        # platform_generation_system,
         sprite_rect_generation_system,
         solid_ground_system,
         screen_bounding_system,

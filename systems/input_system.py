@@ -20,7 +20,6 @@ class InputSystem(System):
             # TODO: This could break when we get to the top of the jump and velocity hits zero?
             jump_key = pygame.K_SPACE
             if keys_pressed[jump_key] and entity.get_component(Grounded):
-                print('Performing jump')
                 velocity.y = -300
                 entity.remove_component(Grounded)
 
