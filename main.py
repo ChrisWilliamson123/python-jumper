@@ -72,7 +72,9 @@ def __main__():
 
     # Platform
     terrain_sprites = [
-        SpriteModel('platform', (272, 0), (58, 5))
+        SpriteModel('platform1', (272, 0), (48, 5), 1.75),
+        SpriteModel('platform2', (272, 16), (48, 5), 1.75),
+        SpriteModel('platform3', (272, 32), (48, 5), 1.75)
     ]
     terrain_sprite_sheet = SpriteSheet('assets/sprite_sheets/terrain.png', terrain_sprites)
     terrain_sprites = terrain_sprite_sheet.get_sprites()

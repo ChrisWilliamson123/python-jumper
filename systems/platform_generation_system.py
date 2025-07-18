@@ -32,14 +32,13 @@ class PlatformGenerationSystem(System):
 
     def update(self, dt):
         platform_count = len(self.world.get_entities_with_components(SolidGround))
-        print(f'Platform count: {platform_count}')
         to_gen = 10 - platform_count
         for _ in range(to_gen):
             self.generate_platform()
 
     def generate_platform(self):
-        print(f'Previous platform pos: {self.last_platform_pos}')
-        platform_sprite_model = self.terrain_sprites['platform']
+        platform_choice = random.choice(['platform1', 'platform2', 'platform3'])
+        platform_sprite_model = self.terrain_sprites[platform_choice]
         platform_width = platform_sprite_model.get_width()
         platform_height = platform_sprite_model.get_height()
 
@@ -55,7 +54,6 @@ class PlatformGenerationSystem(System):
 
             y_offset = random.uniform(-max_y_diff * 0.5, -max_y_diff)
             x_offset = random.uniform(-max_x_diff, max_x_diff)
-
 
             new_x = self.last_platform_pos.x + x_offset
             new_y = self.last_platform_pos.y - y_offset

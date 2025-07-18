@@ -1,5 +1,5 @@
 {
   "player_x_speed": 300,
-  "scroll_speed": 50,
+  "scroll_speed": 30,
   "framerate": 60
 }
