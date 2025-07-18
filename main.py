@@ -5,6 +5,7 @@ from gameutils.sprites.sprite_sheet import SpriteSheet
 from gameutils.sprites.sprite import Sprite as SpriteModel
 
 from components.earth import Earth
+from components.facing_direction import FacingDirection
 from components.gravity import Gravity
 from components.mass import Mass
 from components.player import Player
@@ -17,6 +18,7 @@ from components.sprite import Sprite
 from components.velocity import Velocity
 from models.screen_edge import ScreenEdge
 from settings.jumper_settings import JumperSettings
+from sprites.animated_sprite import AnimatedSprite
 from sprites.image_sprite import ImageSprite
 from sprites.player_sprite import PlayerSprite
 from systems.platform_generation_system import PlatformGenerationSystem
@@ -37,8 +39,8 @@ SCREEN_WIDTH = 1024
 SCREEN_HEIGHT = SCREEN_WIDTH // (16 / 9)
 EARTH_MASS_MULTIPLIER = 50
 
-def create_player(world, width, height, x, y, color):
-    player_sprite = PlayerSprite(width=width, height=height, color=color)
+def create_player(world, x, y, sprites):
+    player_sprite = AnimatedSprite(sprites)
     player = world.create_entity()
     player.add_component(Position(x, y))
     player.add_component(Sprite(player_sprite))
@@ -50,6 +52,7 @@ def create_player(world, width, height, x, y, color):
     player.add_component(ScreenBounded([ScreenEdge.BOTTOM]))
     player.add_component(ScreenWrapped([ScreenEdge.RIGHT, ScreenEdge.LEFT]))
     player.add_component(SolidGroundSettler())
+    player.add_component(FacingDirection())
 
 def __main__():
     settings = JumperSettings()
@@ -59,9 +62,6 @@ def __main__():
     pygame.display.set_caption('Jumper')
     world = World()
     world.running = True
-
-    # Player Entity
-    create_player(world, 20, 40, SCREEN_WIDTH // 2, SCREEN_HEIGHT - 50, 'red')
 
     # Earth Entity
     earth = world.create_entity()
@@ -76,8 +76,28 @@ def __main__():
         SpriteModel('platform2', (272, 16), (48, 5), 1.75),
         SpriteModel('platform3', (272, 32), (48, 5), 1.75)
     ]
+
+    player_sprites = [
+        SpriteModel('frogIdle1', (4, 8), (23, 24)),
+        SpriteModel('frogIdle2', (36, 8), (23, 24)),
+        SpriteModel('frogIdle3', (68, 8), (23, 24)),
+        SpriteModel('frogIdle4', (100, 8), (23, 24)),
+        SpriteModel('frogIdle5', (132, 8), (23, 24)),
+        SpriteModel('frogIdle6', (164, 8), (23, 24)),
+        SpriteModel('frogIdle7', (196, 8), (23, 24)),
+        SpriteModel('frogIdle8', (228, 8), (23, 24)),
+        SpriteModel('frogIdle9', (260, 8), (23, 24)),
+        SpriteModel('frogIdle10', (292, 8), (23, 24)),
+        SpriteModel('frogIdle11', (324, 8), (23, 24)),
+    ]
+
     terrain_sprite_sheet = SpriteSheet('assets/sprite_sheets/terrain.png', terrain_sprites)
     terrain_sprites = terrain_sprite_sheet.get_sprites()
+
+    player_sprite_sheet = SpriteSheet('assets/sprite_sheets/frog/idle.png', player_sprites)
+    player_sprites = player_sprite_sheet.get_sprites()
+
+    create_player(world, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, list(player_sprites.values()))
 
     # for i in range(0, 10):
     #     platform = world.create_entity()

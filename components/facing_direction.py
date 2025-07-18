@@ -4,5 +4,5 @@ from gameutils.ecs.component import Component
 from models.direction import Direction
 
 @dataclass
-class Player(Component):
-    facing_direction: Direction = Direction.RIGHT
+class FacingDirection(Component):
+    direction: Direction = Direction.RIGHT

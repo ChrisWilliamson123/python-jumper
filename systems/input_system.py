@@ -2,10 +2,12 @@ import pygame
 
 from gameutils.ecs.system import System
 
+from components.facing_direction import FacingDirection
 from components.player import Player
 from components.player_controlled import PlayerControlled
 from components.solid_ground import Grounded
 from components.velocity import Velocity
+from models.direction import Direction
 
 class InputSystem(System):
     def __init__(self, settings):
@@ -15,7 +17,7 @@ class InputSystem(System):
     def update(self, dt):
         keys_pressed = pygame.key.get_pressed()
         
-        for (entity, (_, _, velocity)) in self.world.get_entities_with_components(Player, PlayerControlled, Velocity):
+        for (entity, (_, _, velocity, facing)) in self.world.get_entities_with_components(Player, PlayerControlled, Velocity, FacingDirection):
             # Can only jump if our y velocity is zero (i.e. we have something underneath us)
             # TODO: This could break when we get to the top of the jump and velocity hits zero?
             jump_key = pygame.K_SPACE
@@ -29,7 +31,9 @@ class InputSystem(System):
             # Horizontal movement
             if keys_pressed[left_key]:
                 new_x_vel -= self.settings.player_x_speed
+                facing.direction = Direction.LEFT
             if keys_pressed[right_key]:
                 new_x_vel += self.settings.player_x_speed
+                facing.direction = Direction.RIGHT
 
             velocity.x = new_x_vel
