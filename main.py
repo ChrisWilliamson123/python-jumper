@@ -12,6 +12,7 @@ from components.player import Player
 from components.player_controlled import PlayerControlled
 from components.position import Position
 from components.screen_bounded import ScreenBounded
+from components.screen_wrapped import ScreenWrapped
 from components.sprite import Sprite
 from components.velocity import Velocity
 from models.screen_edge import ScreenEdge
@@ -21,6 +22,7 @@ from systems.input_system import InputSystem
 from systems.movement_system import MovementSystem
 from systems.render_system import RenderSystem
 from systems.screen_bounding_system import ScreenBoundingSystem
+from systems.screen_wrapping_system import ScreenWrappingSystem
 
 # Game setup
 SCREEN_WIDTH = 1024
@@ -38,6 +40,7 @@ def create_player(world, width, height, x, y, color):
     player.add_component(PlayerControlled())
     player.add_component(Player())
     player.add_component(ScreenBounded([ScreenEdge.BOTTOM]))
+    player.add_component(ScreenWrapped([ScreenEdge.RIGHT, ScreenEdge.LEFT]))
 
 def __main__():
     pygame.init()
@@ -52,12 +55,14 @@ def __main__():
     gravity_system = GravitySystem()
     movement_system = MovementSystem()
     screen_bounding_system = ScreenBoundingSystem(SCREEN_WIDTH, SCREEN_HEIGHT)
+    screen_wrapping_system = ScreenWrappingSystem(SCREEN_WIDTH, SCREEN_HEIGHT)
     render_system = RenderSystem(screen)
     systems = [
         input_system,
         gravity_system,
         movement_system,
         screen_bounding_system,
+        screen_wrapping_system,
         render_system
     ]
     for system in systems:
