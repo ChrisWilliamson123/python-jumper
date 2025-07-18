@@ -12,18 +12,22 @@ from components.player_controlled import PlayerControlled
 from components.position import Position
 from components.screen_bounded import ScreenBounded
 from components.screen_wrapped import ScreenWrapped
+from components.solid_ground import SolidGround, SolidGroundSettler
 from components.sprite import Sprite
 from components.velocity import Velocity
 from models.screen_edge import ScreenEdge
 from settings.jumper_settings import JumperSettings
 from sprites.image_sprite import ImageSprite
 from sprites.player_sprite import PlayerSprite
+from systems.collision_system import CollisionSystem
 from systems.gravity_system import GravitySystem
 from systems.input_system import InputSystem
 from systems.movement_system import MovementSystem
 from systems.render_system import RenderSystem
 from systems.screen_bounding_system import ScreenBoundingSystem
 from systems.screen_wrapping_system import ScreenWrappingSystem
+from systems.solid_ground_system import SolidGroundSystem
+from systems.sprite_rect_generation_system import SpriteRectGenerationSystem
 
 # Game setup
 SCREEN_WIDTH = 1024
@@ -42,6 +46,7 @@ def create_player(world, width, height, x, y, color):
     player.add_component(Player())
     player.add_component(ScreenBounded([ScreenEdge.BOTTOM]))
     player.add_component(ScreenWrapped([ScreenEdge.RIGHT, ScreenEdge.LEFT]))
+    player.add_component(SolidGroundSettler())
 
 def __main__():
     settings = JumperSettings()
@@ -51,24 +56,6 @@ def __main__():
     pygame.display.set_caption('Jumper')
     world = World()
     world.running = True
-
-    # Systems
-    input_system = InputSystem(settings)
-    gravity_system = GravitySystem()
-    movement_system = MovementSystem()
-    screen_bounding_system = ScreenBoundingSystem(SCREEN_WIDTH, SCREEN_HEIGHT)
-    screen_wrapping_system = ScreenWrappingSystem(SCREEN_WIDTH, SCREEN_HEIGHT)
-    render_system = RenderSystem(screen)
-    systems = [
-        input_system,
-        gravity_system,
-        movement_system,
-        screen_bounding_system,
-        screen_wrapping_system,
-        render_system
-    ]
-    for system in systems:
-        world.add_system(system)
 
     # Player Entity
     create_player(world, 20, 40, SCREEN_WIDTH // 2, SCREEN_HEIGHT - 50, 'red')
@@ -86,9 +73,45 @@ def __main__():
     ]
     terrain_sprite_sheet = SpriteSheet('assets/sprite_sheets/terrain.png', terrain_sprites)
     terrain_sprites = terrain_sprite_sheet.get_sprites()
-    platform = world.create_entity()
-    platform.add_component(Sprite(ImageSprite(terrain_sprites['platform'])))
-    platform.add_component(Position(100, SCREEN_HEIGHT - 5))
+
+    for i in range(0, 10):
+        platform = world.create_entity()
+        platform.add_component(Sprite(ImageSprite(terrain_sprites['platform'])))
+        platform.add_component(Position(100 + (i * 50), SCREEN_HEIGHT - 5 - (i * 80)))
+        platform.add_component(SolidGround())
+
+    # Setting up sprite groups
+    solid_ground_settler_sprite_group = pygame.sprite.Group()
+    for (_, (sprite, _)) in world.get_entities_with_components(Sprite, SolidGroundSettler):
+        solid_ground_settler_sprite_group.add(sprite.sprite)
+
+    solid_ground_sprite_group = pygame.sprite.Group()
+    for (_, (sprite, _)) in world.get_entities_with_components(Sprite, SolidGround):
+        solid_ground_sprite_group.add(sprite.sprite)
+
+    # Systems
+    input_system = InputSystem(settings)
+    gravity_system = GravitySystem()
+    collision_system = CollisionSystem(solid_ground_sprite_group)
+    movement_system = MovementSystem()
+    sprite_rect_generation_system = SpriteRectGenerationSystem()
+    solid_ground_system = SolidGroundSystem(solid_ground_sprite_group, solid_ground_settler_sprite_group)
+    screen_bounding_system = ScreenBoundingSystem(SCREEN_WIDTH, SCREEN_HEIGHT)
+    screen_wrapping_system = ScreenWrappingSystem(SCREEN_WIDTH, SCREEN_HEIGHT)
+    render_system = RenderSystem(screen)
+    systems = [
+        input_system,
+        gravity_system,
+        collision_system,
+        movement_system,
+        sprite_rect_generation_system,
+        solid_ground_system,
+        screen_bounding_system,
+        screen_wrapping_system,
+        render_system
+    ]
+    for system in systems:
+        world.add_system(system)
 
     while world.running:
         dt = clock.tick(settings.framerate) / 1000.0

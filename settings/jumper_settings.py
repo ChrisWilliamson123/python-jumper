@@ -20,5 +20,5 @@ class JumperSettings(GameSettings):
         return self._player_x_speed
     
     @player_x_speed.setter
-    def framerate(self, speed):
+    def player_x_speed(self, speed):
         self._player_x_speed = speed

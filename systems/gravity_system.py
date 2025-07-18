@@ -4,6 +4,7 @@ from components.earth import Earth
 from components.gravity import Gravity
 from components.mass import Mass
 from components.position import Position
+from components.solid_ground import Grounded
 from components.velocity import Velocity
 
 class GravitySystem(System):
@@ -15,7 +16,8 @@ class GravitySystem(System):
         earth_gravity = earth.get_component(Gravity)
         
         for (entity, (position, mass, _, velocity)) in self.world.get_entities_with_components(Position, Mass, Gravity, Velocity):
-            if entity.get_component(Earth):
+            if entity.get_component(Earth) or entity.get_component(Grounded):
+                velocity.y = 0
                 continue
 
             delta_y = abs(earth_position.y - position.y)
