@@ -14,6 +14,7 @@ from components.screen_wrapped import ScreenWrapped
 from components.sprite import Sprite
 from components.velocity import Velocity
 from models.screen_edge import ScreenEdge
+from settings.jumper_settings import JumperSettings
 from sprites.sprite import PlayerSprite
 from systems.gravity_system import GravitySystem
 from systems.input_system import InputSystem
@@ -41,7 +42,7 @@ def create_player(world, width, height, x, y, color):
     player.add_component(ScreenWrapped([ScreenEdge.RIGHT, ScreenEdge.LEFT]))
 
 def __main__():
-    settings = GameSettings()
+    settings = JumperSettings()
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
