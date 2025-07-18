@@ -1,9 +1,7 @@
 import pygame
 
-from gameutils.ecs.component import Component
-from gameutils.ecs.system import System
-
 from gameutils.ecs.world import World
+from gameutils.game_settings import GameSettings
 
 from components.earth import Earth
 from components.gravity import Gravity
@@ -43,6 +41,7 @@ def create_player(world, width, height, x, y, color):
     player.add_component(ScreenWrapped([ScreenEdge.RIGHT, ScreenEdge.LEFT]))
 
 def __main__():
+    settings = GameSettings()
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
@@ -79,7 +78,7 @@ def __main__():
     earth.add_component(Earth())
 
     while world.running:
-        dt = clock.tick(60) / 1000.0
+        dt = clock.tick(settings.framerate) / 1000.0
 
         events = pygame.event.get()
         for event in events:
